@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="33f0f148-dadf-452f-8b86-4240c3ec1b1c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="d960a08c-9238-4768-8a19-149e6e5f392b" />
+	<flow name="hello-world-jayaFlow" doc:id="1c42e2cc-59aa-4ab2-b358-172f8baa1a4d" >
+		<http:listener doc:name="Listener" doc:id="d2b7ed28-12d3-45d6-92ef-944020b04cce" config-ref="HTTP_Listener_config" path="/hello"/>
+		<set-variable value='#["1234556"]' doc:name="Set Variable" doc:id="019b8b9b-2f50-4ea9-af08-8d84325241ac" variableName="transactionid"/>
+		<logger level="INFO" doc:name="Entry Log" doc:id="93819da0-88b8-4071-bb3b-6720f3347baa" message='#["Request id received,customer ID : "]'/>
+		<ee:transform doc:name="Transform Message" doc:id="30422123-f147-4650-af68-1c2fec1a1d05" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Request Logger" doc:id="e8ca0cfe-6cfc-4941-a6a7-edb75cf65bb7" />
+		<http:request method="GET" doc:name="Request" doc:id="51e2bbc6-19af-475c-9b87-2ed8020b5f30" config-ref="HTTP_Request_configuration"/>
+		<logger level="ERROR" doc:name="Response Log" doc:id="f544b021-c967-4d0b-99f2-2a04423f6586" />
+		<logger level="INFO" doc:name="Exit Log" doc:id="1583aeed-0ad2-4f8e-bf14-182526b496c9" />
+		<set-payload value="HELLO Mule" doc:name="Set Payload" doc:id="892f4ed9-ec2b-472b-adc2-1f3fba461f88" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="4bad83af-bde9-43d7-9929-d7fd8f76cebd" >
+				<logger level="ERROR" doc:name="Logger" doc:id="e223a238-d3cf-4aad-b536-6456eb1a4426" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
